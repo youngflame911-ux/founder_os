@@ -1,0 +1,196 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 9%;
+    --primary: 243 75% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 6% 10%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 240 5% 94%;
+    --accent-foreground: 240 6% 10%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 152 60% 38%;
+    --warning: 35 92% 45%;
+    --border: 240 6% 90%;
+    --input: 240 6% 88%;
+    --ring: 243 75% 59%;
+    --sidebar: 240 5% 97.5%;
+    --radius: 0.6rem;
+    color-scheme: light;
+  }
+  .dark {
+    --background: 240 6% 7%;
+    --foreground: 0 0% 96%;
+    --card: 240 5% 9.5%;
+    --card-foreground: 0 0% 96%;
+    --popover: 240 5% 11%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 243 80% 68%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4% 15%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 240 4% 14%;
+    --muted-foreground: 240 5% 62%;
+    --accent: 240 4% 16%;
+    --accent-foreground: 0 0% 96%;
+    --destructive: 0 70% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 152 55% 50%;
+    --warning: 38 92% 56%;
+    --border: 240 4% 17%;
+    --input: 240 4% 20%;
+    --ring: 243 80% 68%;
+    --sidebar: 240 6% 8.5%;
+    color-scheme: dark;
+  }
+  * {
+    @apply border-border;
+  }
+  html,
+  body,
+  #root {
+    @apply h-full;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* элементы grid не должны растягивать колонку длинным содержимым (truncate на мобильных) */
+  .grid > * {
+    min-width: 0;
+  }
+  select option {
+    @apply bg-popover text-popover-foreground;
+  }
+  ::selection {
+    @apply bg-primary/20;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ───── react-big-calendar: тема под дизайн-систему ───── */
+.fos-calendar {
+  @apply text-sm;
+}
+.fos-calendar .rbc-month-view,
+.fos-calendar .rbc-time-view,
+.fos-calendar .rbc-agenda-view {
+  @apply rounded-lg border border-border bg-card;
+}
+.fos-calendar .rbc-header {
+  @apply border-border py-2 text-xs font-medium uppercase tracking-wide text-muted-foreground;
+}
+.fos-calendar .rbc-header + .rbc-header,
+.fos-calendar .rbc-day-bg + .rbc-day-bg,
+.fos-calendar .rbc-month-row + .rbc-month-row,
+.fos-calendar .rbc-time-content,
+.fos-calendar .rbc-time-content > * + * > *,
+.fos-calendar .rbc-timeslot-group,
+.fos-calendar .rbc-time-header-content,
+.fos-calendar .rbc-time-header.rbc-overflowing,
+.fos-calendar .rbc-day-slot .rbc-time-slot,
+.fos-calendar .rbc-agenda-view table.rbc-agenda-table,
+.fos-calendar .rbc-agenda-view table.rbc-agenda-table tbody > tr > td + td,
+.fos-calendar .rbc-agenda-view table.rbc-agenda-table tbody > tr + tr,
+.fos-calendar .rbc-agenda-view table.rbc-agenda-table thead > tr > th {
+  @apply border-border;
+}
+.fos-calendar .rbc-day-slot .rbc-time-slot {
+  border-top-style: dashed;
+  border-top-color: hsl(var(--border) / 0.5);
+}
+.fos-calendar .rbc-off-range-bg {
+  @apply bg-muted/50;
+}
+.fos-calendar .rbc-off-range {
+  @apply text-muted-foreground/60;
+}
+.fos-calendar .rbc-today {
+  @apply bg-primary/[0.06];
+}
+.fos-calendar .rbc-month-view .rbc-row-content {
+  @apply z-auto;
+}
+.fos-calendar .rbc-date-cell {
+  @apply px-2 pt-1.5 text-xs text-muted-foreground;
+}
+.fos-calendar .rbc-date-cell.rbc-now {
+  @apply font-semibold text-primary;
+}
+.fos-calendar .rbc-event,
+.fos-calendar .rbc-day-slot .rbc-background-event {
+  @apply rounded-md border-0 px-1.5 py-0.5 text-xs font-medium shadow-none;
+}
+.fos-calendar .rbc-event:focus {
+  @apply outline-none ring-2 ring-ring ring-offset-1 ring-offset-background;
+}
+.fos-calendar .rbc-day-slot .rbc-event {
+  @apply border-l-[3px];
+}
+.fos-calendar .rbc-show-more {
+  @apply bg-transparent px-2 text-xs font-medium text-primary;
+}
+.fos-calendar .rbc-time-gutter .rbc-label,
+.fos-calendar .rbc-label {
+  @apply text-[11px] text-muted-foreground;
+}
+.fos-calendar .rbc-current-time-indicator {
+  @apply h-0.5 bg-destructive;
+}
+.fos-calendar .rbc-allday-cell {
+  @apply max-h-24 overflow-y-auto;
+}
+.fos-calendar .rbc-time-header-gutter,
+.fos-calendar .rbc-time-gutter {
+  @apply bg-card;
+}
+.fos-calendar .rbc-slot-selection {
+  @apply bg-primary/20 text-primary;
+}
+.fos-calendar .rbc-agenda-date-cell,
+.fos-calendar .rbc-agenda-time-cell {
+  @apply text-xs text-muted-foreground;
+}
+.fos-calendar .rbc-overlay {
+  @apply rounded-lg border border-border bg-popover shadow-lg;
+}
+.fos-calendar .rbc-overlay-header {
+  @apply border-border text-sm;
+}
+
+/* ───── gantt-task-react: цвета через переменные темы ─────
+   Классы библиотеки — CSS-модули с хэшами из dist/index.css (v0.3.9). */
+.fos-gantt {
+  @apply overflow-hidden rounded-lg border border-border bg-card;
+}
+.fos-gantt ._2dZTy { fill: hsl(var(--card)); }
+.fos-gantt ._2dZTy:nth-child(even) { fill: hsl(var(--muted) / 0.45); }
+.fos-gantt ._3rUKi,
+.fos-gantt ._RuwuK,
+.fos-gantt ._1rLuZ { stroke: hsl(var(--border)); }
+.fos-gantt ._9w8d5,
+.fos-gantt ._2q1Kt { fill: hsl(var(--muted-foreground)); font-size: 11px; }
+.fos-gantt ._35nLX { fill: hsl(var(--card)); stroke: hsl(var(--border)); }
+.fos-gantt ._3zRJQ,
+.fos-gantt ._3KcaM { fill: #fff; }
+.fos-gantt ._1eT-t::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.3); background-clip: padding-box; }
