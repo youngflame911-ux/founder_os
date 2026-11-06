@@ -8,6 +8,7 @@ export default defineConfig({
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   test: { environment: 'jsdom', globals: true },
   build: {
+    target: ['es2019', 'safari13', 'chrome80', 'firefox78', 'edge88'],
     rollupOptions: {
       output: {
         manualChunks: {

@@ -12,5 +12,5 @@ export default defineConfig({
   plugins: [react(), viteSingleFile()],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   define: { 'import.meta.env.VITE_ROUTER': JSON.stringify('memory') },
-  build: { outDir: 'dist-single', emptyOutDir: true },
+  build: { outDir: 'dist-single', emptyOutDir: true, target: ['es2019', 'safari13', 'chrome80', 'firefox78', 'edge88'] },
 })
