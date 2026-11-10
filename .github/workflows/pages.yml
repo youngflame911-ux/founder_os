@@ -1,6 +1,6 @@
-# Сборка и публикация Founder OS на GitHub Pages при каждом push в main.
-# Включение: Settings → Pages → Source: GitHub Actions.
-name: Deploy to GitHub Pages
+# Проверка и сборка Founder OS при каждом push в main; публикация на GitHub Pages — по запуску вручную.
+# Включение Pages: Settings → Pages → Source: GitHub Actions.
+name: CI and Pages
 
 on:
   push:
@@ -32,7 +32,10 @@ jobs:
         with:
           path: dist-pages
 
+  # Публикация — только вручную (Actions → Run workflow): Pages в приватном репозитории требует GitHub Pro.
+  # Проверка и сборка выполняются на каждый push.
   deploy:
+    if: github.event_name == 'workflow_dispatch'
     needs: build
     runs-on: ubuntu-latest
     environment:
