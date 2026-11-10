@@ -1,5 +1,5 @@
 import { lazy } from 'react'
-import { BrowserRouter, MemoryRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, HashRouter, MemoryRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { EditorHost } from '@/features/common/EditorHost'
 import DashboardPage from '@/pages/DashboardPage'
@@ -13,8 +13,12 @@ const KnowledgePage = lazy(() => import('@/pages/KnowledgePage'))
 const AnalyticsPage = lazy(() => import('@/pages/AnalyticsPage'))
 const ResultsPage = lazy(() => import('@/pages/ResultsPage'))
 
-/** VITE_ROUTER=memory — сборка для встраиваемого хостинга без серверных маршрутов */
-const Router = import.meta.env.VITE_ROUTER === 'memory' ? MemoryRouter : BrowserRouter
+/**
+ * VITE_ROUTER=memory — встраиваемая страница (Claude, один файл);
+ * VITE_ROUTER=hash — статический хостинг без серверных маршрутов (GitHub Pages);
+ * по умолчанию — обычные адреса (dev-сервер, хостинг с переписыванием на index.html).
+ */
+const Router = import.meta.env.VITE_ROUTER === 'memory' ? MemoryRouter : import.meta.env.VITE_ROUTER === 'hash' ? HashRouter : BrowserRouter
 
 export default function App() {
   return (

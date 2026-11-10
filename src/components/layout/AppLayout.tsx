@@ -114,6 +114,39 @@ function NavItems({ onNavigate }: { onNavigate?: () => void }) {
   )
 }
 
+/** Нижняя панель на телефоне: четыре главных раздела и «Ещё» */
+const TABS = [NAV[1], NAV[0], NAV[2], NAV[3]]
+function MobileTabBar({ onMore }: { onMore: () => void }) {
+  return (
+    <nav
+      className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t bg-background/95 backdrop-blur lg:hidden"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      aria-label="Основные разделы"
+    >
+      {TABS.map(({ to, label, icon: Icon }) => (
+        <NavLink
+          key={to}
+          to={to}
+          end={to === '/'}
+          className={({ isActive }) =>
+            cn(
+              'fos-press flex h-16 flex-col items-center justify-center gap-1 text-[11px] font-medium text-muted-foreground',
+              isActive && 'text-foreground [&_svg]:text-primary',
+            )
+          }
+        >
+          <Icon className="h-5 w-5" />
+          <span className="max-w-full truncate px-1">{to === '/tasks' ? 'Задачи' : label}</span>
+        </NavLink>
+      ))}
+      <button onClick={onMore} className="fos-press flex h-16 flex-col items-center justify-center gap-1 text-[11px] font-medium text-muted-foreground">
+        <Menu className="h-5 w-5" />
+        Ещё
+      </button>
+    </nav>
+  )
+}
+
 function SidebarFooter() {
   const { theme, toggleTheme, setSettingsOpen } = useUi()
   const saveError = useAppStore((s) => s.saveError)
@@ -191,14 +224,17 @@ export function AppLayout() {
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/85 px-4 backdrop-blur lg:hidden">
+        <header
+          className="sticky top-0 z-30 flex items-center gap-3 border-b bg-background/90 px-4 pt-[env(safe-area-inset-top)] backdrop-blur lg:hidden"
+          style={{ height: 'calc(3.5rem + env(safe-area-inset-top))' }}
+        >
           <button onClick={() => setMobileOpen(true)} className="-ml-1.5 rounded-md p-1.5 hover:bg-accent" aria-label="Открыть меню">
             <Menu className="h-5 w-5" />
           </button>
           <span className="font-display text-lg font-bold">{current?.label ?? 'Founder OS'}</span>
         </header>
         <main className="flex-1 overflow-y-auto scrollbar-thin">
-          <div className="mx-auto w-full max-w-[1400px] px-4 pb-28 pt-5 md:px-8 md:pt-8">
+          <div className="mx-auto w-full max-w-[1400px] px-4 pb-[calc(9rem+env(safe-area-inset-bottom))] pt-5 md:px-8 md:pt-8 lg:pb-28">
             <Suspense fallback={<div className="py-20 text-center text-sm text-muted-foreground">Загрузка…</div>}>
               <Outlet />
             </Suspense>
@@ -206,6 +242,7 @@ export function AppLayout() {
         </main>
       </div>
       <QuickAddFab />
+      <MobileTabBar onMore={() => setMobileOpen(true)} />
     </div>
   )
 }

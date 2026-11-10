@@ -17,6 +17,10 @@ initStore()
       </StrictMode>,
     )
     ;(window as unknown as { __fosBooted?: boolean }).__fosBooted = true
+    // Офлайн-кэш только в сборке для хостинга (GitHub Pages): приложение открывается без интернета
+    if (import.meta.env.VITE_PWA === '1' && 'serviceWorker' in navigator && location.protocol === 'https:') {
+      navigator.serviceWorker.register('./sw.js').catch((err) => console.warn('[pwa] офлайн-кэш не подключён', err))
+    }
   })
   .catch((e) => {
     console.error(e)

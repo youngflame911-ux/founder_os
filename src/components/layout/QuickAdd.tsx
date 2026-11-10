@@ -53,7 +53,7 @@ export function QuickAddFab() {
       <button
         onClick={() => setAssistant(true)}
         aria-label="Ассистент"
-        className="fos-press fixed bottom-5 right-[76px] z-30 flex h-12 items-center gap-2 rounded-full border bg-background px-4 text-sm font-medium shadow-lg shadow-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:bottom-7 md:right-[92px]"
+        className="fos-press fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-[76px] z-30 flex h-12 items-center gap-2 rounded-full border bg-background px-4 text-sm font-medium shadow-lg shadow-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:bottom-7 lg:right-[92px]"
       >
         <Sparkles className="h-4 w-4 text-primary" />
         <span className="hidden sm:inline">Спросить ИИ</span>
@@ -63,7 +63,7 @@ export function QuickAddFab() {
       <DropdownMenuTrigger asChild>
         <button
           aria-label="Быстро добавить"
-          className="fos-press fixed bottom-5 right-5 z-30 grid h-12 w-12 place-items-center rounded-full bg-foreground text-background shadow-lg shadow-black/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:bottom-7 md:right-7"
+          className="fos-press fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-5 z-30 grid h-12 w-12 place-items-center rounded-full bg-foreground text-background shadow-lg shadow-black/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:bottom-7 lg:right-7"
         >
           <Plus className="h-5 w-5" />
         </button>

@@ -25,3 +25,4 @@ dist-ssr
 *.tsbuildinfo
 dist-artifact
 dist-single
+dist-pages

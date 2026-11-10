@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc -b",
-    "build:single": "vite build --config vite.single.config.ts && mv dist-single/index.html dist-single/founder-os.html"
+    "build:pages": "tsc -b && VITE_ROUTER=hash VITE_PWA=1 vite build --base ./ --outDir dist-pages",
+    "build:single":"vite build --config vite.single.config.ts && mv dist-single/index.html dist-single/founder-os.html"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.3.1",
