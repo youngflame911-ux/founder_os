@@ -99,7 +99,7 @@ export function CardHeader({ title, action, description, className, icon }: { ti
   return (
     <div className={cn('flex items-start justify-between gap-3 px-5 pb-3 pt-4', className)}>
       <div className="min-w-0">
-        <h3 className="flex items-center gap-2 font-display text-[17px] font-bold leading-tight [&_svg]:size-4 [&_svg]:text-muted-foreground">
+        <h3 className="flex items-center gap-2 font-display text-base font-bold leading-tight [&_svg]:size-4 [&_svg]:text-muted-foreground">
           {icon}
           {title}
         </h3>

@@ -22,9 +22,9 @@ export function SprintSummary({ sprint }: { sprint: Sprint }) {
   return (
     <div className="grid gap-4">
       <div>
-        <div className="flex items-baseline justify-between gap-2">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
           <span className="text-sm font-medium">{status}</span>
-          <span className="text-xs text-muted-foreground tabular">
+          <span className="whitespace-nowrap text-xs text-muted-foreground tabular">
             {fmt(sprint.startDate, 'd MMM')} – {fmt(sprint.endDate, 'd MMM yyyy')}
           </span>
         </div>

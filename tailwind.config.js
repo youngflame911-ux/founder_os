@@ -6,7 +6,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Montserrat', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
-        display: ['"Playfair Display"', 'Georgia', '"Times New Roman"', 'serif'],
+        display: ['Montserrat', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
       },
       colors: {
         border: 'hsl(var(--border))',
