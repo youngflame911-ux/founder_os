@@ -53,6 +53,6 @@ Claude — без ключей API. В скачанном файле ассис�
 
 ## Стек
 
-React 18, TypeScript, Vite 5, Tailwind CSS 3, шрифты Playfair Display и Golos Text, компоненты в стиле shadcn/ui на Radix, Lucide, React Router 6, Zustand 5, date-fns 4, react-big-calendar (месяц, неделя, день), gantt-task-react, Recharts, Vitest.
+React 18, TypeScript, Vite 5, Tailwind CSS 3, шрифты Playfair Display и Montserrat, компоненты в стиле shadcn/ui на Radix, Lucide, React Router 6, Zustand 5, date-fns 4, react-big-calendar (месяц, неделя, день), gantt-task-react, Recharts, Vitest.
 
 Архитектура и функциональность описаны в [FOUNDER_OS_SPEC.md](./FOUNDER_OS_SPEC.md).
