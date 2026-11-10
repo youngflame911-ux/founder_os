@@ -118,9 +118,9 @@ export function DayPlanner({ date, onDateChange }: { date: DateString; onDateCha
                   className="absolute left-[50%] right-0 overflow-hidden rounded-md border-l-[3px] border-primary bg-primary/12 px-2 py-1 text-left text-xs hover:bg-primary/20"
                   style={{ top: top(b.startMin), height: Math.max(20, top(b.endMin) - top(b.startMin) - 2) }}
                 >
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <PriorityIcon priority={t.priority} />
-                    <span className="truncate">{t.title}</span>
+                  <span className="flex items-start gap-1.5 font-medium" title={t.title}>
+                    <PriorityIcon priority={t.priority} className="mt-px" />
+                    <span className={short ? 'truncate' : 'line-clamp-2 break-words leading-snug'}>{t.title}</span>
                     {short && <span className="shrink-0 font-normal text-muted-foreground tabular">{minToTime(b.startMin)}</span>}
                   </span>
                   <span className={cn('text-muted-foreground tabular', short && 'hidden')}>
@@ -193,7 +193,7 @@ export function DayPlanner({ date, onDateChange }: { date: DateString; onDateCha
                 return (
                   <button key={u.taskId} onClick={() => open({ kind: 'task', id: t.id })} className="flex items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-accent/60">
                     <PriorityIcon priority={t.priority} />
-                    <span className="truncate">{t.title}</span>
+                    <span className="min-w-0 break-words leading-snug">{t.title}</span>
                     <span className="ml-auto shrink-0 text-xs text-muted-foreground tabular">{fmtMinutes(u.remainingMinutes)}</span>
                   </button>
                 )
@@ -212,7 +212,7 @@ export function DayPlanner({ date, onDateChange }: { date: DateString; onDateCha
                   <button key={x.taskId} onClick={() => open({ kind: 'task', id: t.id })} className="grid gap-0.5 rounded-md px-2 py-1.5 text-left hover:bg-accent/60">
                     <span className="flex items-center gap-2 text-sm">
                       {x.reason === 'blocked' && <Lock className="h-3 w-3 text-muted-foreground" />}
-                      <span className="truncate">{t.title}</span>
+                      <span className="min-w-0 break-words leading-snug">{t.title}</span>
                     </span>
                     <span className="flex gap-2 text-xs text-muted-foreground">
                       {SKIP_REASON[x.reason]} <ProjectTag projectId={t.projectId} />

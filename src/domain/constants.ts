@@ -34,10 +34,10 @@ export const EVENT_CATEGORY_LABEL: Record<EventCategory, string> = {
 }
 /** Цвета категорий: подобраны так, чтобы читаться в обеих темах */
 export const EVENT_CATEGORY_COLOR: Record<EventCategory, string> = {
-  meeting: '#3b82f6',
-  conference: '#8b5cf6',
-  payment: '#f59e0b',
-  event: '#14b8a6',
+  meeting: '#2346e0',
+  conference: '#0891b2',
+  payment: '#ca8a04',
+  event: '#0e9f6e',
   focus: '#64748b',
   personal: '#ec4899',
 }
@@ -50,7 +50,7 @@ export const NOTE_CATEGORY_LABEL: Record<NoteCategory, string> = {
   material: 'Материал',
 }
 
-export const PROJECT_COLORS = ['#6366f1', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#a855f7', '#ec4899', '#64748b']
+export const PROJECT_COLORS = ['#2346e0', '#0e9f6e', '#e8590c', '#0891b2', '#ca8a04', '#db2777', '#65a30d', '#64748b']
 
 export const DEFAULT_TASK_MINUTES = 60
 export const MIN_BLOCK_MINUTES = 15

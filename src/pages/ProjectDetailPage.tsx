@@ -144,7 +144,7 @@ export default function ProjectDetailPage() {
                 events.slice(0, 8).map((e) => (
                   <button key={e.id} onClick={() => open({ kind: 'event', id: e.id })} className={`flex items-center gap-2 rounded-md px-1 py-1 text-left text-sm hover:bg-accent/60 ${e.end < nowIso ? 'opacity-60' : ''}`}>
                     <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: EVENT_CATEGORY_COLOR[e.category] }} />
-                    <span className="truncate">{e.title}</span>
+                    <span className="min-w-0 break-words leading-snug">{e.title}</span>
                     <span className="ml-auto shrink-0 text-xs text-muted-foreground">{capitalize(fmt(e.start, 'd MMM'))}</span>
                   </button>
                 ))
@@ -160,7 +160,7 @@ export default function ProjectDetailPage() {
                 notes.slice(0, 8).map((n) => (
                   <button key={n.id} onClick={() => open({ kind: 'note', id: n.id })} className="flex items-center gap-2 rounded-md px-1 py-1 text-left text-sm hover:bg-accent/60">
                     <Badge variant="outline">{NOTE_CATEGORY_LABEL[n.category]}</Badge>
-                    <span className="truncate">{n.title}</span>
+                    <span className="min-w-0 break-words leading-snug">{n.title}</span>
                   </button>
                 ))
               ) : (

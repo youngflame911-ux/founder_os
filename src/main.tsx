@@ -9,11 +9,14 @@ import { initStore } from './store/useAppStore'
 
 initStore()
   .then(() => {
-    createRoot(document.getElementById('root')!).render(
+    const root = document.getElementById('root')!
+    root.innerHTML = ''
+    createRoot(root).render(
       <StrictMode>
         <App />
       </StrictMode>,
     )
+    ;(window as unknown as { __fosBooted?: boolean }).__fosBooted = true
   })
   .catch((e) => {
     console.error(e)

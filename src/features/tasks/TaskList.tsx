@@ -18,12 +18,12 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
   if (!tasks.length) return <EmptyState icon={<ListTodo />} title="Задач не найдено" description="Измените фильтры или создайте задачу кнопкой «+»" />
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-card">
+    <div className="overflow-hidden rounded-md border bg-card">
       <table className="w-full text-sm">
         <thead className="hidden border-b bg-muted/40 text-left text-xs text-muted-foreground md:table-header-group">
           <tr>
             <th className="w-10 py-2 pl-4" />
-            <th className="py-2 font-medium">Задача</th>
+            <th className="py-2 font-medium md:w-[44%]">Задача</th>
             <th className="hidden py-2 font-medium lg:table-cell">Проект</th>
             <th className="py-2 font-medium">Приоритет</th>
             <th className="py-2 font-medium">Статус</th>
@@ -37,14 +37,14 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
             const blocked = !done && blockers(t, all).length > 0
             return (
               <tr key={t.id} className="group hover:bg-accent/40">
-                <td className="py-2.5 pl-4 align-middle">
+                <td className="py-2.5 pl-4 align-top">
                   <Checkbox checked={done} onChange={(v) => setStatus(t.id, v ? 'done' : 'planned')} label="Выполнено" />
                 </td>
-                <td className="max-w-0 py-2.5 pr-3">
-                  <button onClick={() => open({ kind: 'task', id: t.id })} className="flex w-full min-w-0 items-center gap-2 text-left">
-                    <span className={cn('truncate font-medium', done && 'font-normal text-muted-foreground line-through')}>{t.title}</span>
+                <td className="py-2.5 pr-3 md:w-[44%] md:min-w-[260px]">
+                  <button onClick={() => open({ kind: 'task', id: t.id })} className="flex w-full min-w-0 items-start gap-2 text-left">
+                    <span className={cn('min-w-0 break-words font-medium leading-snug', done && 'font-normal text-muted-foreground line-through')}>{t.title}</span>
                     {t.isDemo && <DemoBadge />}
-                    {blocked && <Lock className="h-3 w-3 shrink-0 text-muted-foreground" aria-label="Ждёт зависимости" />}
+                    {blocked && <Lock className="mt-1 h-3 w-3 shrink-0 text-muted-foreground" aria-label="Ждёт зависимости" />}
                   </button>
                   <div className="mt-0.5 flex items-center gap-3 md:hidden">
                     <ProjectTag projectId={t.projectId} />

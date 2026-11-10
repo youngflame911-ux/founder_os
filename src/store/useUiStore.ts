@@ -32,6 +32,9 @@ interface UiState {
   confirmReq: ConfirmRequest | null
   settingsOpen: boolean
   theme: Theme
+  /** Панель ИИ-ассистента; draft — текст, с которым её открыли */
+  assistant: { open: boolean; draft: string }
+  setAssistant: (open: boolean, draft?: string) => void
   open: (req: EditorRequest) => void
   close: () => void
   confirm: (opts: Omit<ConfirmRequest, 'resolve'>) => Promise<boolean>
@@ -44,6 +47,8 @@ export const useUi = create<UiState>()((set, get) => ({
   editor: null,
   confirmReq: null,
   settingsOpen: false,
+  assistant: { open: false, draft: '' },
+  setAssistant: (open, draft = '') => set({ assistant: { open, draft } }),
   theme: typeof document !== 'undefined' ? initialTheme() : 'light',
   open: (editor) => set({ editor }),
   close: () => set({ editor: null }),

@@ -41,7 +41,7 @@ export function TaskKanban({ tasks }: { tasks: Task[] }) {
               setDragId(null)
               setOver(null)
             }}
-            className={cn('flex w-[78vw] shrink-0 snap-start flex-col rounded-xl bg-muted/40 p-2 transition-colors md:w-auto', over === status && 'bg-primary/10 ring-1 ring-primary/40')}
+            className={cn('flex w-[78vw] shrink-0 snap-start flex-col rounded-md bg-muted/40 p-2 transition-colors md:w-auto', over === status && 'bg-primary/10 ring-1 ring-primary/40')}
           >
             <div className="flex items-center justify-between px-1.5 pb-2 pt-1">
               <span className="flex items-center gap-2 text-sm font-medium">
@@ -64,7 +64,7 @@ export function TaskKanban({ tasks }: { tasks: Task[] }) {
                     onDragEnd={() => setDragId(null)}
                     onClick={() => open({ kind: 'task', id: t.id })}
                     className={cn(
-                      'cursor-pointer rounded-lg border bg-card p-3 shadow-sm transition-shadow hover:shadow-md',
+                      'fos-lift cursor-pointer rounded-md border bg-card p-3',
                       dragId === t.id && 'opacity-50',
                       t.status === 'done' && 'opacity-70',
                     )}

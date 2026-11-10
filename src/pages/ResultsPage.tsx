@@ -53,7 +53,7 @@ export default function ResultsPage() {
                   return (
                     <li key={r.id} className="relative">
                       <span className="absolute -left-[31px] top-4 grid h-4 w-4 place-items-center rounded-full border-2 border-background bg-primary" />
-                      <Card className="cursor-pointer p-4 transition-shadow hover:shadow-md" onClick={() => open({ kind: 'result', id: r.id })}>
+                      <Card className="fos-lift cursor-pointer p-4" onClick={() => open({ kind: 'result', id: r.id })}>
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div className="min-w-0">
                             <h3 className="font-semibold leading-snug">{r.title}</h3>

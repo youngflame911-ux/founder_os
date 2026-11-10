@@ -1,4 +1,5 @@
-import { BookOpen, CalendarPlus, CheckSquare, FolderPlus, Plus, Trophy } from 'lucide-react'
+import { BookOpen, CalendarPlus, CheckSquare, FolderPlus, Plus, Sparkles, Trophy } from 'lucide-react'
+import { useAssistantAvailable } from '@/features/assistant/AssistantPanel'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown'
 import { Button } from '@/components/ui/primitives'
 import { useUi } from '@/store/useUiStore'
@@ -42,14 +43,27 @@ export function QuickAddMenu() {
   )
 }
 
-/** Глобальная кнопка «+» */
+/** Глобальные кнопки: ассистент и «+» */
 export function QuickAddFab() {
+  const { sample } = useAssistantAvailable()
+  const setAssistant = useUi((s) => s.setAssistant)
   return (
+    <>
+    {sample && (
+      <button
+        onClick={() => setAssistant(true)}
+        aria-label="Ассистент"
+        className="fos-press fixed bottom-5 right-[76px] z-30 flex h-12 items-center gap-2 rounded-full border bg-background px-4 text-sm font-medium shadow-lg shadow-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:bottom-7 md:right-[92px]"
+      >
+        <Sparkles className="h-4 w-4 text-primary" />
+        <span className="hidden sm:inline">Спросить ИИ</span>
+      </button>
+    )}
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
           aria-label="Быстро добавить"
-          className="fixed bottom-5 right-5 z-30 grid h-12 w-12 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:bottom-7 md:right-7"
+          className="fos-press fixed bottom-5 right-5 z-30 grid h-12 w-12 place-items-center rounded-full bg-foreground text-background shadow-lg shadow-black/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:bottom-7 md:right-7"
         >
           <Plus className="h-5 w-5" />
         </button>
@@ -58,5 +72,6 @@ export function QuickAddFab() {
         <Items />
       </DropdownMenuContent>
     </DropdownMenu>
+    </>
   )
 }

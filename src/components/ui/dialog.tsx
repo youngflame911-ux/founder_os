@@ -21,7 +21,7 @@ export function DialogContent({
       <DialogPrimitive.Content
         className={cn(
           'fixed z-50 flex max-h-[92dvh] w-full flex-col overflow-hidden border bg-popover text-popover-foreground shadow-2xl',
-          'inset-x-0 bottom-0 rounded-t-2xl sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl',
+          'inset-x-0 bottom-0 rounded-t-xl sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-md',
           size === 'sm' && 'sm:max-w-md',
           size === 'md' && 'sm:max-w-xl',
           size === 'lg' && 'sm:max-w-3xl',
@@ -31,7 +31,7 @@ export function DialogContent({
       >
         <div className="flex items-start justify-between gap-4 border-b px-5 py-4">
           <div>
-            <DialogPrimitive.Title className="text-base font-semibold">{title}</DialogPrimitive.Title>
+            <DialogPrimitive.Title className="font-display text-xl font-bold">{title}</DialogPrimitive.Title>
             {description ? (
               <DialogPrimitive.Description className="mt-0.5 text-xs text-muted-foreground">{description}</DialogPrimitive.Description>
             ) : (

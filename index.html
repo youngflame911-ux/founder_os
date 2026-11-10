@@ -5,21 +5,21 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
     <title>Founder OS</title>
     <script>
       try { var a = document.documentElement.getAttribute('data-theme'); var t = localStorage.getItem('founder-os:theme') || a; if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark') } catch (e) {}
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><div id="fos-loading" style="display:grid;place-items:center;height:100vh;font:15px system-ui,sans-serif;color:#6b7280">Загрузка Founder OS…</div></div>
     <!-- Вместо белого экрана: если приложение не запустилось, показать причину -->
     <script>
       (function () {
         var firstError = ''
         function show(msg) {
           var root = document.getElementById('root')
-          if (!root || root.childElementCount) return
+          if (!root || window.__fosBooted) return
           var ua = navigator.userAgent
           root.innerHTML =
             '<div style="max-width:560px;margin:12vh auto;padding:24px;font:15px/1.5 system-ui,sans-serif;color:#18181b;background:#fff;border:1px solid #e4e4e7;border-radius:12px">' +
@@ -32,7 +32,8 @@
         window.__fosFail = show
         window.addEventListener('error', function (e) { if (!firstError) firstError = (e.message || '') + (e.filename ? ' @ ' + e.filename.split('/').pop() + ':' + e.lineno : '') })
         window.addEventListener('unhandledrejection', function (e) { if (!firstError) firstError = String(e.reason && e.reason.message || e.reason) })
-        setTimeout(function () { show(firstError) }, 4000)
+        setTimeout(function () { show(firstError) }, firstError ? 1500 : 15000)
+        window.addEventListener('error', function () { setTimeout(function () { show(firstError) }, 1500) }, { once: true })
       })()
     </script>
     <script type="module" src="/src/main.tsx"></script>

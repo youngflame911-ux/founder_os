@@ -6,6 +6,7 @@ import { NoteEditor } from '@/features/knowledge/NoteEditor'
 import { ResultEditor } from '@/features/results/ResultEditor'
 import { ConfirmDialog } from './ConfirmDialog'
 import { SettingsDialog } from './SettingsDialog'
+import { AssistantPanel } from '@/features/assistant/AssistantPanel'
 
 /** Единая точка рендера всех редакторов — открываются через useUi().open(...) из любого раздела */
 export function EditorHost() {
@@ -24,6 +25,7 @@ export function EditorHost() {
       {editor?.kind === 'result' && <ResultEditor key={key} req={editor} onOpenChange={onOpenChange} />}
       <ConfirmDialog />
       <SettingsDialog />
+      <AssistantPanel />
     </>
   )
 }

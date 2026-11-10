@@ -75,7 +75,7 @@ export function SprintPanel({ sprint }: { sprint: Sprint }) {
           <CardHeader icon={<Target />} title="Цели спринта" description="3–5 измеримых результатов к концу 90 дней" />
           <CardBody className="grid gap-2">
             {sprint.goals.map((g) => (
-              <div key={g.id} className="group flex items-start gap-3 rounded-lg border px-3 py-2.5">
+              <div key={g.id} className="group flex items-start gap-3 rounded-md border px-3 py-2.5">
                 <Checkbox className="mt-1" checked={g.done} onChange={(v) => updateGoal(g.id, { done: v })} />
                 <div className="grid flex-1 gap-1">
                   <input value={g.title} onChange={(e) => updateGoal(g.id, { title: e.target.value })} className={cn('w-full bg-transparent text-sm font-medium outline-none', g.done && 'text-muted-foreground line-through')} />
@@ -108,7 +108,7 @@ export function SprintPanel({ sprint }: { sprint: Sprint }) {
                 key={w.index}
                 onClick={() => setSelectedWeek(selectedWeek === w.index ? null : w.index)}
                 className={cn(
-                  'grid gap-1.5 rounded-lg border bg-card p-2.5 text-left transition-colors hover:border-primary/40',
+                  'grid gap-1.5 rounded-md border bg-card p-2.5 text-left transition-colors hover:border-primary/40',
                   current && 'border-primary/60 bg-primary/[0.04]',
                   selectedWeek === w.index && 'ring-2 ring-primary/50',
                   past && 'opacity-75',

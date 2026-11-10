@@ -59,7 +59,7 @@ export function GanttChart({
           ) : (
             <span className="w-4 shrink-0" />
           )}
-          <button className="truncate text-left hover:underline" onClick={() => onOpen?.(t)} title={t.name}>
+          <button className="line-clamp-2 break-words text-left leading-tight hover:underline" onClick={() => onOpen?.(t)} title={t.name}>
             {t.name}
           </button>
         </div>
@@ -67,7 +67,7 @@ export function GanttChart({
     </div>
   )
   const Tooltip = ({ task }: { task: GanttTask }) => (
-    <div className="rounded-lg border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-lg">
+    <div className="rounded-md border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-lg">
       <p className="mb-0.5 font-medium">{task.name}</p>
       <p className="text-muted-foreground">
         {fmt(task.start, 'd MMM')} – {fmt(new Date(task.end.getTime() - 1), 'd MMM yyyy')} · {Math.round(task.progress)}%
@@ -102,7 +102,7 @@ export function GanttChart({
           barFill={62}
           fontFamily="Inter, system-ui, sans-serif"
           fontSize="12px"
-          todayColor={dark ? 'rgba(129,140,248,0.10)' : 'rgba(99,102,241,0.07)'}
+          todayColor={dark ? 'rgba(125,152,255,0.10)' : 'rgba(35,70,224,0.06)'}
           arrowColor={dark ? '#71717a' : '#a1a1aa'}
           barBackgroundColor={dark ? '#3f3f46' : '#d4d4d8'}
           barBackgroundSelectedColor={dark ? '#52525b' : '#a1a1aa'}

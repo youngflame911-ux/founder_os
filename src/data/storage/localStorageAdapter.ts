@@ -4,7 +4,8 @@ import type { StorageAdapter } from './types'
 const KEY = 'founder-os:data'
 
 export class LocalStorageAdapter implements StorageAdapter {
-  readonly name = 'localStorage'
+  readonly name = 'этот браузер'
+  readonly kind = 'local' as const
   constructor(private readonly key = KEY) {}
 
   async load(): Promise<AppData | null> {

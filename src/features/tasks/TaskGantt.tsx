@@ -8,7 +8,7 @@ import { useUi } from '@/store/useUiStore'
 import { atTime, toDateString } from '@/lib/dates'
 import { GanttChart, type GanttTask } from '@/features/common/GanttChart'
 
-const PRIORITY_BAR = { critical: '#ef4444', high: '#f59e0b', medium: '#6366f1', low: '#94a3b8' }
+const PRIORITY_BAR = { critical: '#dc2626', high: '#e8590c', medium: '#2346e0', low: '#94a3b8' }
 
 /** Интервал задачи для Ганта: [начало, дедлайн] включительно; при отсутствии одной из дат — оценка по плану */
 export function taskSpan(t: Task): { start: Date; end: Date } | null {

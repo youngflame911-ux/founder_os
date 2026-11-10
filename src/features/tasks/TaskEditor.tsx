@@ -128,7 +128,7 @@ export function TaskEditor({ req, onOpenChange }: { req: Extract<EditorRequest, 
           </div>
 
           {sprint && (
-            <div className="rounded-lg border bg-muted/30 p-3">
+            <div className="rounded-md border bg-muted/30 p-3">
               <label className="flex items-center gap-2 text-sm">
                 <Checkbox checked={t.sprintId === sprint.id} onChange={(v) => setT((x) => ({ ...x, sprintId: v ? sprint.id : null, sprintWeek: v ? x.sprintWeek : null }))} />
                 Входит в {sprint.name}
@@ -152,7 +152,7 @@ export function TaskEditor({ req, onOpenChange }: { req: Extract<EditorRequest, 
               <Link2 className="h-3.5 w-3.5" /> Зависит от задач {t.dependsOn.length > 0 && `(${t.dependsOn.length})`}
             </div>
             {tasks.length > (existing ? 1 : 0) ? (
-              <div className="rounded-lg border">
+              <div className="rounded-md border">
                 <div className="relative border-b">
                   <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                   <input value={depQuery} onChange={(e) => setDepQuery(e.target.value)} placeholder="Найти задачу" className="h-9 w-full bg-transparent pl-8 pr-3 text-sm outline-none" />

@@ -96,7 +96,7 @@ export default function KnowledgePage() {
       {list.length ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {list.map((n) => (
-            <Card key={n.id} className="cursor-pointer p-4 transition-shadow hover:shadow-md" onClick={() => open({ kind: 'note', id: n.id })}>
+            <Card key={n.id} className="fos-lift cursor-pointer p-4" onClick={() => open({ kind: 'note', id: n.id })}>
               <div className="mb-2 flex items-center gap-2">
                 <Badge variant={n.category === 'idea' ? 'primary' : n.category === 'hypothesis' ? 'warning' : 'default'}>{NOTE_CATEGORY_LABEL[n.category]}</Badge>
                 {n.isDemo && <DemoBadge />}

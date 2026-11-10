@@ -19,9 +19,9 @@ export function buildDemoData(sprintId: ID | null) {
   const iso = (offset: number) => subDays(now, -offset).toISOString()
   const demo = { isDemo: true }
 
-  const p1 = newProject({ ...demo, name: 'Демо: Запуск сервиса', description: 'Пример проекта для знакомства с системой', goal: 'Первые 10 платящих клиентов', startDate: d(-40), deadline: d(50), color: '#6366f1', createdAt: iso(-40) })
-  const p2 = newProject({ ...demo, name: 'Демо: Привлечение инвестиций', description: 'Пример проекта', goal: 'Закрыть раунд', startDate: d(-20), deadline: d(80), color: '#10b981', createdAt: iso(-20) })
-  const p3 = newProject({ ...demo, name: 'Демо: Старый эксперимент', description: 'Пример проекта без активности', goal: 'Проверить гипотезу', startDate: d(-90), deadline: d(-10), color: '#f59e0b', createdAt: iso(-90), updatedAt: iso(-30) })
+  const p1 = newProject({ ...demo, name: 'Демо: Запуск сервиса', description: 'Пример проекта для знакомства с системой', goal: 'Первые 10 платящих клиентов', startDate: d(-40), deadline: d(50), color: '#2346e0', createdAt: iso(-40) })
+  const p2 = newProject({ ...demo, name: 'Демо: Привлечение инвестиций', description: 'Пример проекта', goal: 'Закрыть раунд', startDate: d(-20), deadline: d(80), color: '#0e9f6e', createdAt: iso(-20) })
+  const p3 = newProject({ ...demo, name: 'Демо: Старый эксперимент', description: 'Пример проекта без активности', goal: 'Проверить гипотезу', startDate: d(-90), deadline: d(-10), color: '#e8590c', createdAt: iso(-90), updatedAt: iso(-30) })
 
   const t1 = newTask({ ...demo, title: 'Демо: Описать оффер', projectId: p1.id, priority: 'high', status: 'done', startDate: d(-12), deadline: d(-8), plannedMinutes: 120, actualMinutes: 150, createdAt: iso(-14), completedAt: iso(-9), sprintId })
   const t2 = newTask({ ...demo, title: 'Демо: Собрать лендинг', projectId: p1.id, priority: 'critical', status: 'in_progress', startDate: d(-5), deadline: d(2), plannedMinutes: 240, actualMinutes: 90, dependsOn: [t1.id], createdAt: iso(-7), sprintId, sprintWeek: 1 })

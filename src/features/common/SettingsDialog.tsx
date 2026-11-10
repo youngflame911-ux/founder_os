@@ -7,6 +7,7 @@ import { useUi } from '@/store/useUiStore'
 import { isAppData } from '@/data/storage/migrations'
 import { storage } from '@/data/storage'
 import { todayString } from '@/lib/dates'
+import { getCapability } from '@/lib/claudeRuntime'
 
 function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
@@ -28,11 +29,23 @@ export function SettingsDialog() {
   const demoCount = [store.projects, store.tasks, store.events, store.notes, store.results].reduce((a, l) => a + l.filter((x) => x.isDemo).length, 0)
   const wd = store.settings.workday
 
-  const exportJson = () => {
-    const blob = new Blob([JSON.stringify(selectData(useAppStore.getState()), null, 2)], { type: 'application/json' })
+  const exportJson = async () => {
+    const json = JSON.stringify(selectData(useAppStore.getState()), null, 2)
+    const filename = `founder-os-backup-${todayString()}.json`
+    const downloads = await getCapability('downloads', 3000)
+    if (downloads) {
+      try {
+        await downloads.save({ filename, data: new Blob([json], { type: 'application/json' }) })
+        setMsg('Резервная копия сохранена')
+      } catch (e) {
+        setMsg((e as { code?: string }).code === 'declined' ? 'Сохранение отменено' : 'Не удалось сохранить файл')
+      }
+      return
+    }
+    const blob = new Blob([json], { type: 'application/json' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = `founder-os-backup-${todayString()}.json`
+    a.download = filename
     a.click()
     URL.revokeObjectURL(a.href)
   }
@@ -51,7 +64,7 @@ export function SettingsDialog() {
 
   return (
     <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-      <DialogContent title="Настройки и данные" description={`Хранилище: ${storage.name} (данные остаются в этом браузере)`}>
+      <DialogContent title="Настройки и данные" description={storage.kind === 'cloud' ? 'Данные в облаке Claude: синхронизируются между вашими устройствами' : 'Данные хранятся только в этом браузере'}>
         <DialogBody>
           <Section title="Рабочий день по умолчанию" description="Используется планировщиком дня. Для конкретной даты можно задать своё расписание в календаре.">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -84,7 +97,7 @@ export function SettingsDialog() {
             </div>
           </Section>
 
-          <Section title="Резервная копия" description="localStorage привязан к браузеру — делайте экспорт регулярно, пока не подключён Supabase.">
+          <Section title="Резервная копия" description="Файл JSON со всеми записями. Из него всё восстанавливается кнопкой «Импорт».">
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" onClick={exportJson}>
                 <Download /> Экспорт JSON

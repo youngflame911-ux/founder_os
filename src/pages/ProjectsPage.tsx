@@ -81,7 +81,7 @@ function ProjectCard({ project: p }: { project: Project }) {
 
   return (
     <Link to={`/projects/${p.id}`}>
-      <Card className="group grid h-full gap-4 p-5 transition-shadow hover:shadow-md">
+      <Card className="fos-lift group grid h-full gap-4 p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2.5">
             <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: p.color }} />

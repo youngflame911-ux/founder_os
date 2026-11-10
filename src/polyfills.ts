@@ -4,7 +4,6 @@
  * методы, которые используют библиотеки (Radix вызывает toSorted при старте).
  * Импортируется первым в main.tsx.
  */
-/* eslint-disable no-extend-native */
 
 type Cmp<T> = ((a: T, b: T) => number) | undefined
 

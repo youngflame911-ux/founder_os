@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { addDays, isMonday, parseISO } from 'date-fns'
-import { AlertTriangle, ArrowRight, CalendarClock, CalendarDays, CheckCircle2, Crosshair, FlaskConical, FolderKanban, ListTodo, PlayCircle, Target, Timer } from 'lucide-react'
+import { AlertTriangle, ArrowRight, CalendarClock, CalendarDays, CheckCircle2, Crosshair, FlaskConical, FolderKanban, ListTodo, PlayCircle, Sparkles, Target, Timer } from 'lucide-react'
 import { Button, Card, CardBody, CardHeader, DemoBadge, EmptyState, Progress, Stat, Textarea } from '@/components/ui/primitives'
 import { EVENT_CATEGORY_COLOR } from '@/domain/constants'
 import { useAppStore } from '@/store/useAppStore'
@@ -12,8 +12,53 @@ import { capitalize, fmt, fmtMinutes, fmtTime, todayString, weekStartString } fr
 import { TaskRow } from '@/features/tasks/TaskRow'
 import { SprintSummary, useActiveSprint } from '@/features/tasks/SprintSummary'
 import { ProjectTag } from '@/features/common/bits'
+import { useAssistantAvailable } from '@/features/assistant/AssistantPanel'
+import { plural } from '@/lib/utils'
 
 const hm = (m: number) => (m > 0 ? fmtMinutes(m) : '0 ч')
+/** Подзаголовок дня одной фразой — по реальным данным */
+function dek(events: number, due: number, overdue: number) {
+  const parts: string[] = []
+  parts.push(events ? `${events} ${plural(events, ['встреча', 'встречи', 'встреч'])} в календаре` : 'встреч нет')
+  if (due) parts.push(`${due} ${plural(due, ['дедлайн', 'дедлайна', 'дедлайнов'])} сегодня`)
+  if (overdue) parts.push(`${overdue} ${plural(overdue, ['задача просрочена', 'задачи просрочены', 'задач просрочено'])}`)
+  return capitalize(parts.join(', ')) + '.'
+}
+
+/** Командная строка: открывает ассистента с уже введённым текстом */
+function CommandBar() {
+  const { sample } = useAssistantAvailable()
+  const setAssistant = useUi((u) => u.setAssistant)
+  const [text, setText] = useState('')
+  if (!sample) return null
+  const submit = () => {
+    if (!text.trim()) return setAssistant(true)
+    setAssistant(true, text.trim())
+    setText('')
+  }
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        submit()
+      }}
+      className="flex items-center gap-2 rounded-md border bg-card py-1.5 pl-3.5 pr-1.5 focus-within:border-ring"
+    >
+      <Sparkles className="h-4 w-4 shrink-0 text-primary" />
+      <input
+        id="command-bar"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Напишите, что сделали или что нужно сделать: «закрыл сделку с ARGO на 2 млн»"
+        className="h-9 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+      />
+      <Button type="submit" size="sm">
+        Отправить
+      </Button>
+    </form>
+  )
+}
+
 const greeting = (h: number) => (h < 5 ? 'Доброй ночи' : h < 12 ? 'Доброе утро' : h < 18 ? 'Добрый день' : 'Добрый вечер')
 
 export default function DashboardPage() {
@@ -48,20 +93,30 @@ export default function DashboardPage() {
 
   return (
     <div className="grid gap-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-sm text-muted-foreground">{greeting(now.getHours())}</p>
-          <h1 className="text-xl font-semibold tracking-tight md:text-2xl">{capitalize(fmt(now, 'EEEE, d MMMM yyyy'))}</h1>
+      <header className="fos-rule fos-enter flex flex-wrap items-end justify-between gap-4 pb-5">
+        <div className="min-w-0">
+          <h1 className="font-display text-[38px] font-extrabold leading-[1.02] md:text-[56px]">{capitalize(fmt(now, 'EEEE, d MMMM'))}</h1>
+          <p className="mt-2 max-w-[62ch] text-[15px] text-muted-foreground">
+            {greeting(now.getHours())}. {dek(d.eventsToday.length, d.dueToday.length, d.overdue.length)}
+          </p>
         </div>
         <Button variant="outline" asChild>
           <Link to="/calendar?view=planner">
             <Timer /> План дня
           </Link>
         </Button>
-      </div>
+      </header>
+
+      <CommandBar />
+
+      {s.migratedFromBrowser && (
+        <p className="rounded-md border border-success/40 bg-success/[0.06] px-4 py-3 text-sm">
+          Записи из этого браузера перенесены в облако. Теперь они видны на всех ваших устройствах.
+        </p>
+      )}
 
       {isMonday(now) && !s.reviews.some((r) => r.weekStart === weekStartString(addDays(now, -7))) && (
-        <Link to="/analytics?tab=review" className="flex items-center justify-between gap-3 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm hover:bg-primary/10">
+        <Link to="/analytics?tab=review" className="flex items-center justify-between gap-3 rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-sm hover:bg-primary/10">
           <span>
             <span className="font-medium">Понедельник — время обзора.</span> <span className="text-muted-foreground">Итоги прошлой недели собраны автоматически.</span>
           </span>
@@ -123,10 +178,10 @@ export default function DashboardPage() {
               {d.eventsToday.length > 0 ? (
                 <div className="grid gap-1">
                   {d.eventsToday.map((e) => (
-                    <button key={e.id} onClick={() => open({ kind: 'event', id: e.id })} className="flex items-center gap-3 rounded-lg px-2 py-1.5 text-left text-sm hover:bg-accent/60">
+                    <button key={e.id} onClick={() => open({ kind: 'event', id: e.id })} className="flex items-center gap-3 rounded-md px-2 py-1.5 text-left text-sm hover:bg-accent/60">
                       <span className="w-24 shrink-0 text-xs text-muted-foreground tabular">{e.allDay ? 'Весь день' : `${fmtTime(e.start)}–${fmtTime(e.end)}`}</span>
                       <span className="h-4 w-1 shrink-0 rounded-full" style={{ background: EVENT_CATEGORY_COLOR[e.category] }} />
-                      <span className="truncate">{e.title}</span>
+                      <span className="min-w-0 break-words leading-snug">{e.title}</span>
                       {e.isDemo && <DemoBadge />}
                     </button>
                   ))}
@@ -182,10 +237,10 @@ export default function DashboardPage() {
             <CardBody className="grid gap-1">
               {d.upcoming.length ? (
                 d.upcoming.map((e) => (
-                  <button key={e.id} onClick={() => open({ kind: 'event', id: e.id })} className="grid gap-0.5 rounded-lg px-2 py-1.5 text-left hover:bg-accent/60">
+                  <button key={e.id} onClick={() => open({ kind: 'event', id: e.id })} className="grid gap-0.5 rounded-md px-2 py-1.5 text-left hover:bg-accent/60">
                     <span className="flex items-center gap-2 text-sm">
                       <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: EVENT_CATEGORY_COLOR[e.category] }} />
-                      <span className="truncate">{e.title}</span>
+                      <span className="min-w-0 break-words leading-snug">{e.title}</span>
                     </span>
                     <span className="flex items-center gap-2 pl-4 text-xs text-muted-foreground">
                       {capitalize(fmt(e.start, e.allDay ? 'EEEEEE, d MMM' : 'EEEEEE, d MMM, HH:mm'))}
@@ -206,7 +261,7 @@ export default function DashboardPage() {
 
 function Mini({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-muted/50 px-3 py-2">
+    <div className="rounded-md bg-muted/50 px-3 py-2">
       <div className="text-[11px] text-muted-foreground">{label}</div>
       <div className="text-sm font-semibold tabular">{value}</div>
     </div>

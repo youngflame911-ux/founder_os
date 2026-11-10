@@ -16,7 +16,7 @@ import type {
 } from '@/domain/types'
 import { createEmptyData } from '@/domain/factories'
 import { buildDemoData } from '@/data/demo'
-import { storage } from '@/data/storage'
+import { localStorageAdapter, selectStorage, setStorage, storage } from '@/data/storage'
 import { migrate } from '@/data/storage/migrations'
 import { nowISO } from '@/lib/utils'
 
@@ -43,6 +43,11 @@ function normalizeTask(prev: Task | undefined, t: Task): Task {
 export interface AppState extends AppData {
   hydrated: boolean
   saveError: string | null
+  /** Где живут данные: облако Claude или только этот браузер */
+  storageKind: 'cloud' | 'local'
+  syncing: boolean
+  /** При первом запуске в облаке перенесены записи из браузера */
+  migratedFromBrowser: boolean
 
   hydrate: (data: AppData) => void
 
@@ -51,6 +56,8 @@ export interface AppState extends AppData {
   deleteTask: (id: ID) => void
 
   upsertProject: (p: Project) => void
+  /** Полное удаление — только для отмены действия ассистента (обычные проекты архивируются) */
+  purgeProject: (id: ID) => void
   closeProject: (id: ID, reason: string, lessons: string) => void
   reopenProject: (id: ID) => void
 
@@ -105,6 +112,9 @@ export const useAppStore = create<AppState>()((set, get) => {
     ...createEmptyData(),
     hydrated: false,
     saveError: null,
+    storageKind: 'local',
+    syncing: false,
+    migratedFromBrowser: false,
 
     hydrate: (data) => set({ ...data, hydrated: true }),
 
@@ -124,6 +134,17 @@ export const useAppStore = create<AppState>()((set, get) => {
       })),
 
     upsertProject: (p) => put('projects', p),
+    purgeProject: (id) =>
+      set((s) => {
+        const unlink = <T extends { projectId: ID | null }>(x: T): T => (x.projectId === id ? { ...x, projectId: null } : x)
+        return {
+          projects: s.projects.filter((p) => p.id !== id),
+          tasks: s.tasks.map(unlink),
+          events: s.events.map(unlink),
+          notes: s.notes.map(unlink),
+          results: s.results.map(unlink),
+        }
+      }),
     closeProject: (id, reason, lessons) => {
       const p = get().projects.find((x) => x.id === id)
       if (!p) return
@@ -203,10 +224,77 @@ export const useAppStore = create<AppState>()((set, get) => {
   }
 })
 
-/** Загрузка из хранилища + автосохранение с дебаунсом */
+const ENTITY_KEYS = ['projects', 'tasks', 'events', 'notes', 'results', 'reviews'] as const
+
+/**
+ * Объединение двух наборов данных: записи — по id (побеждает более свежий updatedAt),
+ * настройки и прочее — из `base`, недостающее дополняется из `extra`.
+ */
+export function mergeData(base: AppData, extra: AppData): AppData {
+  const out: AppData = { ...base }
+  for (const k of [...ENTITY_KEYS, 'sprints'] as const) {
+    const map = new Map<string, { id: string; updatedAt?: string }>()
+    for (const r of base[k] as { id: string; updatedAt?: string }[]) map.set(r.id, r)
+    for (const r of extra[k] as { id: string; updatedAt?: string }[]) {
+      const cur = map.get(r.id)
+      if (!cur || (r.updatedAt ?? '') > (cur.updatedAt ?? '')) map.set(r.id, r)
+    }
+    ;(out as unknown as Record<string, unknown>)[k] = [...map.values()]
+  }
+  // Если в облаке остался только автоматически созданный пустой спринт, а в браузере есть свой — берём браузерный
+  const baseSprintUsed = base.sprints.some((sp) => sp.goals.length || sp.weeks.some((w) => w.goal))
+  if (!baseSprintUsed && extra.sprints.length) {
+    out.sprints = extra.sprints
+    out.settings = { ...base.settings, activeSprintId: extra.settings.activeSprintId }
+  }
+  out.weeklyFocus = { ...extra.weeklyFocus, ...base.weeklyFocus }
+  out.workdays = { ...extra.workdays, ...base.workdays }
+  out.dayPlans = { ...extra.dayPlans, ...base.dayPlans }
+  return migrate(out)
+}
+
+/** Загрузка из хранилища + автосохранение с дебаунсом + синхронизация */
 export async function initStore() {
-  const loaded = await storage.load()
+  const adapter = await selectStorage()
+  let loaded: AppData | null = null
+  let migratedFromBrowser = false
+
+  if (adapter.kind === 'cloud') {
+    try {
+      const cloud = await adapter.load()
+      // Записи этого браузера, ещё не перенесённые в облако (каждое устройство переносит своё один раз)
+      let alreadyMigrated = true
+      try {
+        alreadyMigrated = !!localStorage.getItem('founder-os:migratedAt')
+      } catch {
+        /* хранилище браузера недоступно */
+      }
+      const local = alreadyMigrated ? null : await localStorageAdapter.load()
+      const localHasRecords = !!local && ENTITY_KEYS.some((k) => (local[k] as unknown[] | undefined)?.length)
+      if (!cloud || localHasRecords) {
+        loaded = cloud ? mergeData(migrate(cloud), migrate(local)) : migrate(local)
+        await adapter.save(loaded)
+        migratedFromBrowser = localHasRecords
+      } else loaded = cloud
+      if (!alreadyMigrated) {
+        try {
+          localStorage.setItem('founder-os:migratedAt', new Date().toISOString())
+        } catch {
+          /* копия всё равно в облаке */
+        }
+      }
+    } catch (e) {
+      console.error('[storage] облако недоступно', e)
+      useAppStore.setState({ saveError: 'Облако недоступно — показаны данные этого браузера. Изменения не синхронизируются.' })
+      loaded = await localStorageAdapter.load()
+      setStorage(localStorageAdapter)
+    }
+  } else {
+    loaded = await adapter.load()
+  }
+
   useAppStore.getState().hydrate(migrate(loaded))
+  useAppStore.setState({ storageKind: storage.kind, migratedFromBrowser })
 
   let timer: ReturnType<typeof setTimeout> | undefined
   let dirty = false
@@ -216,12 +304,19 @@ export async function initStore() {
     clearTimeout(timer)
     if (!dirty) return
     dirty = false
+    useAppStore.setState({ syncing: true })
     storage
       .save(selectData(useAppStore.getState()))
-      .then(() => useAppStore.getState().saveError && useAppStore.setState({ saveError: null }))
-      .catch(() => {
+      .then(() => useAppStore.setState({ syncing: false, saveError: null }))
+      .catch((e: { code?: string }) => {
         dirty = true
-        useAppStore.setState({ saveError: 'Не удалось сохранить данные: переполнено хранилище браузера' })
+        const msg =
+          storage.kind === 'cloud'
+            ? e?.code === 'quota_exceeded'
+              ? 'Облачное хранилище заполнено — удалите старые записи'
+              : 'Не удалось сохранить в облако — повторим при следующем изменении'
+            : 'Не удалось сохранить данные: переполнено хранилище браузера'
+        useAppStore.setState({ syncing: false, saveError: msg })
       })
   }
 
@@ -231,19 +326,28 @@ export async function initStore() {
     if (!changed) return
     dirty = true
     clearTimeout(timer)
-    timer = setTimeout(flush, 250)
+    timer = setTimeout(flush, storage.kind === 'cloud' ? 600 : 250)
   })
 
-  // Сохраняем при закрытии только несохранённые изменения — иначе вкладка
-  // перезаписала бы данные, сохранённые в это время другой вкладкой
+  // Сохраняем при закрытии только несохранённые изменения
   window.addEventListener('beforeunload', flush)
 
-  // Синхронизация между вкладками: подхватываем данные, записанные другой вкладкой
-  window.addEventListener('storage', async (e) => {
-    if (e.storageArea !== localStorage || !e.key?.startsWith('founder-os:data') || dirty) return
-    const fresh = await storage.load()
+  const applyExternal = (data: AppData) => {
+    if (dirty) return // локальные правки важнее; они уйдут следующим сохранением
     applyingExternal = true
-    useAppStore.getState().hydrate(migrate(fresh))
+    useAppStore.getState().hydrate(migrate(data))
     applyingExternal = false
-  })
+  }
+
+  if (storage.subscribe) {
+    // Облако: изменения с других устройств и от Claude из чата приходят сами
+    storage.subscribe(() => selectData(useAppStore.getState()), applyExternal)
+  } else {
+    // Браузер: синхронизация между вкладками
+    window.addEventListener('storage', async (e) => {
+      if (e.storageArea !== localStorage || !e.key?.startsWith('founder-os:data') || dirty) return
+      const fresh = await storage.load()
+      if (fresh) applyExternal(fresh)
+    })
+  }
 }

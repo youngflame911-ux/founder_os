@@ -5,11 +5,11 @@ import { cn } from '@/lib/utils'
 
 // ───── Button ─────
 export const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
+  'fos-press inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,background-color,border-color,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90',
+        default: 'bg-foreground text-background hover:bg-foreground/85',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-accent',
         outline: 'border border-input bg-background hover:bg-accent',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
@@ -17,7 +17,7 @@ export const buttonVariants = cva(
         link: 'text-primary underline-offset-4 hover:underline',
       },
       size: {
-        default: 'h-9 px-3.5',
+        default: 'h-11 px-4 sm:h-9 sm:px-3.5',
         sm: 'h-8 px-2.5 text-xs',
         lg: 'h-10 px-5',
         icon: 'h-9 w-9',
@@ -93,13 +93,13 @@ export function Checkbox({ checked, onChange, className, label, ...rest }: { che
 
 // ───── Card ─────
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('rounded-xl border bg-card text-card-foreground', className)} {...props} />
+  return <div className={cn('rounded-md border bg-card text-card-foreground', className)} {...props} />
 }
 export function CardHeader({ title, action, description, className, icon }: { title: React.ReactNode; action?: React.ReactNode; description?: React.ReactNode; className?: string; icon?: React.ReactNode }) {
   return (
     <div className={cn('flex items-start justify-between gap-3 px-5 pb-3 pt-4', className)}>
       <div className="min-w-0">
-        <h3 className="flex items-center gap-2 text-sm font-semibold [&_svg]:size-4 [&_svg]:text-muted-foreground">
+        <h3 className="flex items-center gap-2 font-display text-[17px] font-bold leading-tight [&_svg]:size-4 [&_svg]:text-muted-foreground">
           {icon}
           {title}
         </h3>
@@ -114,7 +114,7 @@ export function CardBody({ className, ...props }: React.HTMLAttributes<HTMLDivEl
 }
 
 // ───── Badge ─────
-export const badgeVariants = cva('inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium leading-4 whitespace-nowrap', {
+export const badgeVariants = cva('inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 text-[11px] font-medium leading-4 whitespace-nowrap', {
   variants: {
     variant: {
       default: 'bg-secondary text-secondary-foreground',
@@ -150,7 +150,7 @@ export function Progress({ value, className, color }: { value: number; className
 // ───── Segmented control ─────
 export function Segmented<T extends string>({ value, onChange, options, className, size = 'default' }: { value: T; onChange: (v: T) => void; options: { value: T; label: React.ReactNode; icon?: React.ReactNode }[]; className?: string; size?: 'default' | 'sm' }) {
   return (
-    <div className={cn('inline-flex rounded-lg bg-secondary p-0.5', className)} role="tablist">
+    <div className={cn('inline-flex rounded-md bg-secondary p-0.5', className)} role="tablist">
       {options.map((o) => (
         <button
           key={o.value}
@@ -158,7 +158,7 @@ export function Segmented<T extends string>({ value, onChange, options, classNam
           aria-selected={value === o.value}
           onClick={() => onChange(o.value)}
           className={cn(
-            'inline-flex items-center gap-1.5 rounded-md font-medium text-muted-foreground transition-colors hover:text-foreground [&_svg]:size-3.5',
+            'inline-flex items-center gap-1.5 rounded-[3px] font-medium text-muted-foreground transition-colors hover:text-foreground [&_svg]:size-3.5',
             size === 'sm' ? 'h-7 px-2.5 text-xs' : 'h-8 px-3 text-sm',
             value === o.value && 'bg-background text-foreground shadow-sm',
           )}
@@ -174,9 +174,9 @@ export function Segmented<T extends string>({ value, onChange, options, classNam
 // ───── Empty state ─────
 export function EmptyState({ icon, title, description, action, className }: { icon?: React.ReactNode; title: string; description?: string; action?: React.ReactNode; className?: string }) {
   return (
-    <div className={cn('flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed px-6 py-10 text-center', className)}>
-      {icon && <div className="mb-1 rounded-lg bg-secondary p-2.5 text-muted-foreground [&_svg]:size-5">{icon}</div>}
-      <p className="text-sm font-medium">{title}</p>
+    <div className={cn('flex flex-col items-center justify-center gap-2 rounded-md border border-dashed px-6 py-10 text-center', className)}>
+      {icon && <div className="mb-1 rounded-md bg-secondary p-2.5 text-muted-foreground [&_svg]:size-5">{icon}</div>}
+      <p className="font-display text-lg font-bold">{title}</p>
       {description && <p className="max-w-sm text-xs text-muted-foreground">{description}</p>}
       {action && <div className="mt-2">{action}</div>}
     </div>
@@ -193,7 +193,7 @@ export function Stat({ label, value, sub, tone, icon }: { label: string; value: 
       </div>
       <div
         className={cn(
-          'mt-1.5 text-2xl font-semibold tracking-tight tabular',
+          'mt-1 font-display text-[30px] font-bold leading-tight tabular',
           tone === 'danger' && 'text-destructive',
           tone === 'success' && 'text-success',
           tone === 'warning' && 'text-warning',
@@ -208,10 +208,10 @@ export function Stat({ label, value, sub, tone, icon }: { label: string; value: 
 
 export function PageHeader({ title, description, actions }: { title: string; description?: React.ReactNode; actions?: React.ReactNode }) {
   return (
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <div className="fos-rule fos-enter mb-6 flex flex-wrap items-end justify-between gap-3 pb-4">
       <div className="min-w-0">
-        <h1 className="text-xl font-semibold tracking-tight md:text-2xl">{title}</h1>
-        {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
+        <h1 className="font-display text-[30px] font-bold leading-[1.1] md:text-[40px]">{title}</h1>
+        {description && <p className="mt-1.5 text-sm text-muted-foreground">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>

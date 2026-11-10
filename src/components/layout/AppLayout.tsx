@@ -10,12 +10,17 @@ import {
   Menu,
   Moon,
   Settings,
+  Sparkles,
+  Cloud,
+  HardDrive,
   Sun,
   Trophy,
   X,
 } from 'lucide-react'
+import { getISOWeek } from 'date-fns'
 import { cn } from '@/lib/utils'
-import { todayString } from '@/lib/dates'
+import { useAssistantAvailable } from '@/features/assistant/AssistantPanel'
+import { fmt, todayString } from '@/lib/dates'
 import { useUi } from '@/store/useUiStore'
 import { useAppStore } from '@/store/useAppStore'
 import { QuickAddMenu, QuickAddFab } from './QuickAdd'
@@ -31,16 +36,48 @@ export const NAV = [
   { to: '/results', label: 'Результаты', icon: Trophy },
 ] as const
 
+/** Шапка как у журнала: название и «номер выпуска» — неделя года */
 function Brand() {
+  const now = new Date()
   return (
-    <div className="flex items-center gap-2.5 px-2">
-      <div className="grid h-7 w-7 place-items-center rounded-lg bg-foreground text-background">
-        <svg viewBox="0 0 32 32" className="h-4 w-4" aria-hidden>
-          <path d="M10 22V10h12M10 16h8" stroke="currentColor" strokeWidth="3.2" fill="none" strokeLinecap="round" />
-        </svg>
+    <div className="px-2">
+      <div className="font-display text-[27px] font-extrabold leading-none">Founder OS</div>
+      <div className="mt-2 border-t border-foreground pt-1.5 text-[10.5px] font-medium uppercase tracking-[0.12em] text-muted-foreground tabular">
+        № {getISOWeek(now)} · {fmt(now, 'd MMMM yyyy')}
       </div>
-      <span className="text-[15px] font-semibold tracking-tight">Founder OS</span>
     </div>
+  )
+}
+
+function SyncStatus() {
+  const kind = useAppStore((s) => s.storageKind)
+  const syncing = useAppStore((s) => s.syncing)
+  const error = useAppStore((s) => s.saveError)
+  if (error) return null
+  return (
+    <p className="flex items-center gap-2 px-2.5 pb-1 text-[11px] text-muted-foreground" title={kind === 'cloud' ? 'Данные синхронизируются между вашими устройствами' : 'Данные хранятся только в этом браузере'}>
+      {kind === 'cloud' ? <Cloud className="h-3.5 w-3.5" /> : <HardDrive className="h-3.5 w-3.5" />}
+      {kind === 'cloud' ? (syncing ? 'Сохраняю в облако…' : 'В облаке, синхронизировано') : 'Только этот браузер'}
+    </p>
+  )
+}
+
+function AssistantNav({ onNavigate }: { onNavigate?: () => void }) {
+  const { sample } = useAssistantAvailable()
+  const setAssistant = useUi((s) => s.setAssistant)
+  if (!sample) return null
+  return (
+    <button
+      onClick={() => {
+        onNavigate?.()
+        setAssistant(true)
+      }}
+      className="fos-press flex h-9 w-full items-center gap-2.5 rounded-md border px-2.5 text-sm hover:bg-accent"
+    >
+      <Sparkles className="h-4 w-4 text-primary" />
+      Ассистент
+      <kbd className="ml-auto text-[10px] text-muted-foreground">/</kbd>
+    </button>
   )
 }
 
@@ -60,7 +97,7 @@ function NavItems({ onNavigate }: { onNavigate?: () => void }) {
           className={({ isActive }) =>
             cn(
               'group flex h-9 items-center gap-2.5 rounded-md px-2.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground',
-              isActive && 'bg-accent font-medium text-foreground',
+              isActive && 'bg-accent font-semibold text-foreground [&_svg]:text-primary',
             )
           }
         >
@@ -82,6 +119,7 @@ function SidebarFooter() {
   const saveError = useAppStore((s) => s.saveError)
   return (
     <div className="mt-auto grid gap-0.5 border-t pt-3">
+      <SyncStatus />
       {saveError && <p className="mb-2 rounded-md bg-destructive/10 px-2 py-1.5 text-[11px] text-destructive">{saveError}</p>}
       <button onClick={toggleTheme} className="flex h-9 items-center gap-2.5 rounded-md px-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground">
         {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -112,6 +150,10 @@ export function AppLayout() {
         e.preventDefault()
         open({ kind: 'task' })
       }
+      if (e.key === '/' || e.key === '.') {
+        e.preventDefault()
+        useUi.getState().setAssistant(true)
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -120,9 +162,12 @@ export function AppLayout() {
   return (
     <div className="flex h-full">
       {/* Desktop sidebar */}
-      <aside className="hidden w-60 shrink-0 flex-col gap-4 border-r bg-sidebar px-3 py-4 lg:flex">
+      <aside className="hidden w-64 shrink-0 flex-col gap-5 border-r bg-sidebar px-3 py-5 lg:flex">
         <Brand />
-        <QuickAddMenu />
+        <div className="grid gap-2">
+          <QuickAddMenu />
+          <AssistantNav />
+        </div>
         <NavItems />
         <SidebarFooter />
       </aside>
@@ -138,6 +183,7 @@ export function AppLayout() {
                 <X className="h-4 w-4" />
               </button>
             </div>
+            <AssistantNav onNavigate={() => setMobileOpen(false)} />
             <NavItems onNavigate={() => setMobileOpen(false)} />
             <SidebarFooter />
           </aside>
@@ -149,7 +195,7 @@ export function AppLayout() {
           <button onClick={() => setMobileOpen(true)} className="-ml-1.5 rounded-md p-1.5 hover:bg-accent" aria-label="Открыть меню">
             <Menu className="h-5 w-5" />
           </button>
-          <span className="font-semibold">{current?.label ?? 'Founder OS'}</span>
+          <span className="font-display text-lg font-bold">{current?.label ?? 'Founder OS'}</span>
         </header>
         <main className="flex-1 overflow-y-auto scrollbar-thin">
           <div className="mx-auto w-full max-w-[1400px] px-4 pb-28 pt-5 md:px-8 md:pt-8">

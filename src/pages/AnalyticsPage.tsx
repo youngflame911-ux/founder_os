@@ -4,21 +4,23 @@ import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAx
 import { BarChart3, CalendarCheck, Clock, Crosshair, Moon, Table2 } from 'lucide-react'
 import { Card, CardBody, CardHeader, EmptyState, PageHeader, Segmented, Stat } from '@/components/ui/primitives'
 import { useAppStore } from '@/store/useAppStore'
+import { useUi } from '@/store/useUiStore'
 import { inactiveProjects, periodPreset, taskMetrics, timeByProject, weeklyDynamics } from '@/services/metrics'
 import { relative } from '@/lib/dates'
 import { SprintSummary, useActiveSprint } from '@/features/tasks/SprintSummary'
 import { WeeklyReviewPanel } from '@/features/review/WeeklyReviewPanel'
 
 type Preset = '7d' | '30d' | '90d' | 'all'
-/** Палитра двух серий проверена валидатором (CVD ΔE ≥ 19, контраст ≥ 3:1 в обеих темах) */
-const SERIES = { a: '#6366f1', b: '#0d9488' }
+/** Пары серий проверены валидатором палитры: светлая и тёмная тема (CVD ΔE ≥ 23, контраст ≥ 3:1) */
+const SERIES_LIGHT = { a: '#2346E0', b: '#0E9F6E' }
+const SERIES_DARK = { a: '#5A78FA', b: '#0E9F6E' }
 
 const axis = { fontSize: 11, fill: 'hsl(var(--muted-foreground))' }
 
 function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: string }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-lg border bg-popover px-3 py-2 text-xs shadow-lg">
+    <div className="rounded-md border bg-popover px-3 py-2 text-xs shadow-lg">
       <p className="mb-1 font-medium">{label}</p>
       {payload.map((p) => (
         <p key={p.name} className="flex items-center gap-2 text-muted-foreground">
@@ -37,6 +39,7 @@ export default function AnalyticsPage() {
   const [showTable, setShowTable] = useState(false)
   const { tasks, projects, settings } = useAppStore()
   const sprint = useActiveSprint()
+  const SERIES = useUi((u) => u.theme) === 'dark' ? SERIES_DARK : SERIES_LIGHT
 
   const period = periodPreset(preset)
   const m = useMemo(() => taskMetrics(tasks, period), [tasks, period.from, period.to]) // eslint-disable-line react-hooks/exhaustive-deps
